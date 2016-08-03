@@ -32,6 +32,7 @@ namespace CDNSupport
             return r;
            
         }
+
    }
 
     [Serializable]
@@ -82,5 +83,7 @@ namespace CDNSupport
             answer = entity.answer;
             troubletype = entity.troubletype;
         }
-    } 
+    }
+ 
+    
 }

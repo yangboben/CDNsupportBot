@@ -36,7 +36,6 @@ namespace CDNSupport
         public string service { get; set; }
 
 
-       abstract public void getAllinfo(LuisResult result);
 
        public IOrderedEnumerable<PropertyInfo> GetSortedProperties()
        {
@@ -71,9 +70,24 @@ namespace CDNSupport
            }
            
        }
-         
-      
+
+
+       public void transform(QuestionInfo question) {
+           if (question == null)
+               return;
+           var list = question.getSortedPropertiesList();
+           foreach (var i in GetSortedProperties()) {
+               foreach (var j in list)
+               {
+                   if (i.Name == j.Name)
+                       i.SetValue(this, j.GetValue(question));
+               }
+           }
        
+       }
+
+
+       public abstract  string getAskString();
        
     }
 
@@ -86,20 +100,17 @@ namespace CDNSupport
        [Order(2)]
        public string type { get; set; }
         
-        public CreateQusetionInfo() {
+       public CreateQusetionInfo() {
             intent = "create";
         }
-        
 
-       // public string service { get; set;  }
+       public override string getAskString()
+       {
 
-        override public void getAllinfo(LuisResult result)
-        {
-            service = CDNsupportDialog.getEntity("service", result);
-            
-        }
-
-        
+           string r = String.Format("您是要咨询关于创建{0} {1} {2}的问题么？",type,service,service_item);
+          
+           return r;
+       }
     }
 
     [Serializable]
@@ -109,12 +120,13 @@ namespace CDNSupport
         public PriceQuestionInfo() {
             intent = "price";
         }
-        public override void getAllinfo(LuisResult result)
-        {
 
-            service = CDNsupportDialog.getEntity("service", result);
-            
+        public override string getAskString()
+        {
+            string r = String.Format("您咨询的是{0}的价格么？", service);
+            return r;
         }
+     
     
     }
 
@@ -126,10 +138,13 @@ namespace CDNSupport
             intent = "deploy";
         }
 
-        public override void getAllinfo(LuisResult result)
+        public override string getAskString()
         {
-            service = CDNsupportDialog.getEntity("service", result);
+            string r = String.Format("您咨询的是有关配置 {0} 的问题吗？",service);
+
+            return r;
         }
+   
     }
 
     [Serializable]
@@ -142,10 +157,10 @@ namespace CDNSupport
             intent = "troubleshooting";
         }
 
-        public override void getAllinfo(LuisResult result)
+        public override string getAskString()
         {
-            service = CDNsupportDialog.getEntity("service", result);
-            troubletype = CDNsupportDialog.getEntity("troubletype",result);
+            string r = String.Format("您咨询的是有关 {0} {1} 的问题么？",service,troubletype);
+            return r;
         }
     }
 }
