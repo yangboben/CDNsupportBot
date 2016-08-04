@@ -32,9 +32,6 @@ namespace CDNSupport
     {
         public QuestionInfo() { }
         public string intent { get; set; }
-       [Order(0)]
-        public string service { get; set; }
-
 
 
        public IOrderedEnumerable<PropertyInfo> GetSortedProperties()
@@ -94,6 +91,10 @@ namespace CDNSupport
     [Serializable]
     class CreateQusetionInfo : QuestionInfo 
     {
+
+       [Order(0)]
+       public string service { get; set; }
+
        [Order(1)]
        public string service_item { get; set; }
 
@@ -117,6 +118,9 @@ namespace CDNSupport
 
     class PriceQuestionInfo : QuestionInfo {
 
+        [Order(0)]
+        public string service { get; set; }
+
         public PriceQuestionInfo() {
             intent = "price";
         }
@@ -134,13 +138,19 @@ namespace CDNSupport
 
     class DeployQuestionInfo : QuestionInfo {
 
+        [Order(0)]
+        public string service { get; set; }
+
+        [Order(1)]
+        public string item { get; set; }
+
         public DeployQuestionInfo() {
-            intent = "deploy";
+            intent = "config";
         }
 
         public override string getAskString()
         {
-            string r = String.Format("您咨询的是有关配置 {0} 的问题吗？",service);
+            string r = String.Format("您咨询的是有关配置 {0} {1} 的问题吗？", service, item);
 
             return r;
         }
@@ -149,6 +159,9 @@ namespace CDNSupport
 
     [Serializable]
     class TroubleShootingQuestionInfo : QuestionInfo {
+
+        [Order(0)]
+        public string service { get; set; }
 
         [Order(1)]
         public string troubletype { get; set; }
@@ -159,8 +172,29 @@ namespace CDNSupport
 
         public override string getAskString()
         {
-            string r = String.Format("您咨询的是有关 {0} {1} 的问题么？",service,troubletype);
+            string r = String.Format("您咨询的是有关 {0} {1} 的问题么？", service, troubletype);
             return r;
+        }
+    }
+
+    [Serializable]
+    class AdvisoryQuestionInfo : QuestionInfo
+    {
+        [Order(1)]
+        public string target { get; set; }
+
+        public AdvisoryQuestionInfo()
+        {
+            intent = "advisory";
+        }
+
+        public override string getAskString()
+        {
+            string r="";
+            if (target != null)  
+             r = string.Format("您想咨询的是有关 {0} 的问题么?",target);
+            r += "我们现在可能并没有这方面的信息.";
+            return r; 
         }
     }
 }

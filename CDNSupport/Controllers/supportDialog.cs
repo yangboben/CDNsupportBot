@@ -37,7 +37,12 @@ namespace CDNSupport
         public async Task None(IDialogContext context, LuisResult result)
         {
 
-
+            if (result.Query.ToLower() == "hi" || result.Query.ToLower() == "hello")
+            {
+                await context.PostAsync("您好,请问有什么可以帮您的么？");
+                    context.Wait(MessageReceived);
+                return;
+            }
             if (getEntities(question, result))
             {
                 //TODO:加入如果这个回答的entity仍然不是选项的那么返回的问题改变。
@@ -105,21 +110,6 @@ namespace CDNSupport
             }
             
         }
-
-        [LuisIntent("change")]
-        public async Task QuestionChange(IDialogContext context, LuisResult result) {
-
-            await context.PostAsync("change");
-            context.Wait(MessageReceived);
-        }
-
-        [LuisIntent("delete")]
-        public async Task QuestionDelete(IDialogContext context, LuisResult result) {
-
-            await context.PostAsync("delete");
-            context.Wait(MessageReceived);
-        }
-
         [LuisIntent("price")]
         public async Task QuestionPrice(IDialogContext context, LuisResult result) {
             if (isReply(question, result) && question.GetType() == typeof(PriceQuestionInfo))
@@ -164,6 +154,32 @@ namespace CDNSupport
             {
                 QuestionInfo temp = question;
                 question = new TroubleShootingQuestionInfo();
+                question.transform(temp);
+                getinfo(question, result);
+                await getchoose(context).ConfigureAwait(false);
+            }
+        }
+
+        [LuisIntent("advisory")]
+        public async Task QuestionAdvisory(IDialogContext context, LuisResult result)
+        {
+            if (isReply(question, result) && question.GetType() == typeof(AdvisoryQuestionInfo))
+            {
+                //是上次询问问题的回答
+                if (getEntities(question, result))
+                {
+                    await getchoose(context);
+                }
+                else
+                {
+                    await context.PostAsync(getNoAnswerReturn()).ConfigureAwait(false);
+                    context.Wait(MessageReceived);
+                }
+            }
+            else
+            {
+                QuestionInfo temp = question;
+                question = new AdvisoryQuestionInfo();
                 question.transform(temp);
                 getinfo(question, result);
                 await getchoose(context).ConfigureAwait(false);
@@ -318,13 +334,13 @@ namespace CDNSupport
 
        private string getAskString(IEnumerable<string> options_provider) {
            string r = question.getAskString();
-           r += "您的问题是不是和";
+           r += "您的问题是不是和我们的";
 
            foreach (string i in options_provider) { 
                r += " "+i+",";
            }
 
-           r += "这几个有关呢？";
+           r += "其中之一有关呢？";
 
            return r;
        }
