@@ -12,7 +12,7 @@ using Microsoft.Bot.Connector;
 namespace CDNSupport
 {
 
-    [LuisModel("9cc8dcc2-997d-42e2-88d7-3382a7b88a93", "61dd0a37d0194e86972e02f3bffb7a94")]
+    [LuisModel("fd644578-3651-469a-aa11-94f87f8c820f", "61dd0a37d0194e86972e02f3bffb7a94")]
     [Serializable]
     public class CDNsupportDialog : LuisDialog<object>
     {
@@ -20,15 +20,7 @@ namespace CDNSupport
         enum Intent { Create = 1,Deploy,Change,Delete }
 
         public const string DefaultAnswer = "没有找到解决方法，建议联系我们的客服试试";
-
-        public const string Entity_Service = "service";
-        public const string Entity_Service_item = "service::item";
-        public const string Emtity_type = "type";
-        public const string Entity_target = "target";
-
-        public const string Default_Type = "";
-        public const string Default_Service_item = "";
-
+      
         private QuestionInfo question;
         private IEnumerable<tableitem> allOptions;
         private PropertyInfo CurrentItem;
@@ -56,11 +48,11 @@ namespace CDNSupport
             }
         }
 
-        [LuisIntent("create")]
+        [LuisIntent("how")]
         public async Task QuestionCreate(IDialogContext context, LuisResult result)
         {
 
-            if (isReply(question, result) && question.GetType() == typeof(CreateQusetionInfo))
+            if (isReply(question, result) && question.GetType() == typeof(HowQuestionInfo))
             {
                 //是上次询问问题的回答
                 if (getEntities(question, result))
@@ -76,7 +68,7 @@ namespace CDNSupport
             else
             {
                 QuestionInfo temp = question;
-                question = new CreateQusetionInfo();
+                question = new HowQuestionInfo();
                 question.transform(temp);
                 getinfo(question, result);
                 await getchoose(context).ConfigureAwait(false);
@@ -84,10 +76,10 @@ namespace CDNSupport
           
         }
 
-        [LuisIntent("deploy")]
+        [LuisIntent("how_much")]
         public async Task QuestionDeploy(IDialogContext context, LuisResult result) {
 
-            if (isReply(question, result) && question.GetType() == typeof(DeployQuestionInfo))
+            if (isReply(question, result) && question.GetType() == typeof(HowMuchQuestionInfo))
             {
                 //是上次询问问题的回答
                 if (getEntities(question, result))
@@ -103,16 +95,16 @@ namespace CDNSupport
             else
             {
                 QuestionInfo temp = question;
-                question = new DeployQuestionInfo();
+                question = new HowMuchQuestionInfo();
                 question.transform(temp);
                 getinfo(question, result);
                 await getchoose(context).ConfigureAwait(false);
             }
             
         }
-        [LuisIntent("price")]
+        [LuisIntent("how_long")]
         public async Task QuestionPrice(IDialogContext context, LuisResult result) {
-            if (isReply(question, result) && question.GetType() == typeof(PriceQuestionInfo))
+            if (isReply(question, result) && question.GetType() == typeof(HowLongQuestionInfo))
             {
                 //是上次询问问题的回答
                 if (getEntities(question, result))
@@ -128,7 +120,7 @@ namespace CDNSupport
             else
             {
                 QuestionInfo temp = question;
-                question = new PriceQuestionInfo();
+                question = new HowLongQuestionInfo();
                 question.transform(temp);
                 getinfo(question, result);
                 await getchoose(context).ConfigureAwait(false);
@@ -136,9 +128,9 @@ namespace CDNSupport
         }
 
 
-        [LuisIntent("Troubleshooting")]
+        [LuisIntent("what")]
         public async Task QuestionTroubleShooting(IDialogContext context, LuisResult result) {
-            if (isReply(question, result) && question.GetType() == typeof(TroubleShootingQuestionInfo))
+            if (isReply(question, result) && question.GetType() == typeof(WhatQuestionInfo))
             {
                 //是上次询问问题的回答
                 if (getEntities(question, result))
@@ -153,38 +145,13 @@ namespace CDNSupport
             else
             {
                 QuestionInfo temp = question;
-                question = new TroubleShootingQuestionInfo();
+                question = new WhatQuestionInfo();
                 question.transform(temp);
                 getinfo(question, result);
                 await getchoose(context).ConfigureAwait(false);
             }
         }
-
-        [LuisIntent("advisory")]
-        public async Task QuestionAdvisory(IDialogContext context, LuisResult result)
-        {
-            if (isReply(question, result) && question.GetType() == typeof(AdvisoryQuestionInfo))
-            {
-                //是上次询问问题的回答
-                if (getEntities(question, result))
-                {
-                    await getchoose(context);
-                }
-                else
-                {
-                    await context.PostAsync(getNoAnswerReturn()).ConfigureAwait(false);
-                    context.Wait(MessageReceived);
-                }
-            }
-            else
-            {
-                QuestionInfo temp = question;
-                question = new AdvisoryQuestionInfo();
-                question.transform(temp);
-                getinfo(question, result);
-                await getchoose(context).ConfigureAwait(false);
-            }
-        }
+          
 
         private string getEntity(string entity_string, LuisResult result)
         {
@@ -291,6 +258,7 @@ namespace CDNSupport
                        //只有一个选项供选择
                        i.SetValue(question, option_provide[0]);
                        question.select(i.Name, (string)i.GetValue(question), allOptions, out allOptions, out option_provide);
+                       
                    }
                    else
                    {
@@ -311,6 +279,7 @@ namespace CDNSupport
            }
            if (if_find)
            {
+               CurrentItem = null;
                foreach (var i in allOptions)
                {
                    await context.PostAsync(i.answer).ConfigureAwait(false);

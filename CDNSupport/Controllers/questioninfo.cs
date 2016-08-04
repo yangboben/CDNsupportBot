@@ -89,40 +89,36 @@ namespace CDNSupport
     }
 
     [Serializable]
-    class CreateQusetionInfo : QuestionInfo 
+    class HowQuestionInfo : QuestionInfo 
     {
 
        [Order(0)]
        public string service { get; set; }
 
        [Order(1)]
-       public string service_item { get; set; }
-
-       [Order(2)]
-       public string type { get; set; }
-        
-       public CreateQusetionInfo() {
-            intent = "create";
+       public string item { get; set; }
+       
+       public HowQuestionInfo() {
+            intent = "how";
         }
 
        public override string getAskString()
        {
 
-           string r = String.Format("您是要咨询关于创建{0} {1} {2}的问题么？",type,service,service_item);
+           string r = String.Format("您是要咨询关于创建{0} {1} 的问题么？", service, item);
           
            return r;
        }
     }
 
     [Serializable]
-
-    class PriceQuestionInfo : QuestionInfo {
+    class HowMuchQuestionInfo : QuestionInfo {
 
         [Order(0)]
         public string service { get; set; }
 
-        public PriceQuestionInfo() {
-            intent = "price";
+        public HowMuchQuestionInfo() {
+            intent = "how_much";
         }
 
         public override string getAskString()
@@ -135,8 +131,7 @@ namespace CDNSupport
     }
 
     [Serializable]
-
-    class DeployQuestionInfo : QuestionInfo {
+    class HowLongQuestionInfo : QuestionInfo {
 
         [Order(0)]
         public string service { get; set; }
@@ -144,8 +139,8 @@ namespace CDNSupport
         [Order(1)]
         public string item { get; set; }
 
-        public DeployQuestionInfo() {
-            intent = "config";
+        public HowLongQuestionInfo() {
+            intent = "how_long";
         }
 
         public override string getAskString()
@@ -157,44 +152,46 @@ namespace CDNSupport
    
     }
 
-    [Serializable]
-    class TroubleShootingQuestionInfo : QuestionInfo {
-
-        [Order(0)]
-        public string service { get; set; }
-
-        [Order(1)]
-        public string troubletype { get; set; }
-
-        public TroubleShootingQuestionInfo() {
-            intent = "troubleshooting";
-        }
-
-        public override string getAskString()
-        {
-            string r = String.Format("您咨询的是有关 {0} {1} 的问题么？", service, troubletype);
-            return r;
-        }
-    }
+   
 
     [Serializable]
-    class AdvisoryQuestionInfo : QuestionInfo
+    class WhatQuestionInfo : QuestionInfo
     {
         [Order(1)]
-        public string target { get; set; }
+        public string range { get; set; }
 
-        public AdvisoryQuestionInfo()
+        public WhatQuestionInfo()
         {
-            intent = "advisory";
+            intent = "what";
         }
 
         public override string getAskString()
         {
             string r="";
-            if (target != null)  
-             r = string.Format("您想咨询的是有关 {0} 的问题么?",target);
+            if (range != null)  
+             r = string.Format("您想咨询的是有关 {0} 的问题么?",range);
             r += "我们现在可能并没有这方面的信息.";
             return r; 
+        }
+    }
+
+    class HaveQuestionInfo : QuestionInfo
+    {
+        [Order(0)]
+        public string serivce { get; set; }
+
+        public HaveQuestionInfo() {
+            intent = "have";
+        }
+
+        public override string getAskString()
+        {
+            string r = "";
+            if (serivce != null)
+                r = string.Format(" 我们没有 {0} 这类服务。", serivce);
+            else
+                r = string.Format("这个我也不清楚，要不您跟我们的人工客服联系一下吧"); 
+            return r;
         }
     }
 }

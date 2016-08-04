@@ -21,7 +21,7 @@ namespace CDNSupport
             CloudTableClient tableClient = storageAccount.CreateCloudTableClient();
 
             // Create the CloudTable object that represents the "people" table.
-            CloudTable table = tableClient.GetTableReference("support");
+            CloudTable table = tableClient.GetTableReference("supportv3");
 
             TableQuery<CDNSupportEntity> query = new TableQuery<CDNSupportEntity>().Where(TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, intent));
 
@@ -44,14 +44,7 @@ namespace CDNSupport
             this.PartitionKey = pk;
             this.RowKey = rk;
         }
-
-        public CDNSupportEntity(string pk,string rk,string service,string answer) {
-            this.PartitionKey = pk;
-            this.RowKey = RowKey;
-            this.service = service;
-            this.answer = answer;
-            
-        }
+    
 
         public CDNSupportEntity() { }
 
@@ -62,7 +55,7 @@ namespace CDNSupport
         public string target { get; set; }
 
         public string item { get; set; }
-        public string troubletype { get; set; }
+        //public string troubletype { get; set; }
     }
 
     [Serializable]
@@ -86,7 +79,7 @@ namespace CDNSupport
             target = entity.target;
             item = entity.item;
             answer = entity.answer;
-            troubletype = entity.troubletype;
+            //troubletype = entity.troubletype;
         }
     }
  
