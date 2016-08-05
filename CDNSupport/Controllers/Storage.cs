@@ -52,9 +52,13 @@ namespace CDNSupport
        
         public string answer { get; set; }
 
-        public string target { get; set; }
-
         public string item { get; set; }
+
+        public string action { get; set; }
+
+        public string range { get; set; }
+
+        public string company { get; set; }
         //public string troubletype { get; set; }
     }
 
@@ -65,20 +69,25 @@ namespace CDNSupport
 
         public string service { get; set; }
 
-        public string target { get; set; }
+        public string action { get; set; }
+
+        public string range { get; set; }
 
         public string answer { get; set; }
 
         public string item { get; set; }
 
-        public string troubletype { get; set; }
+        public string company { get; set; }
+       // public string troubletype { get; set; }
         public tableitem(CDNSupportEntity entity){
 
             intent = entity.PartitionKey;
             service = entity.service;
-            target = entity.target;
+            action = entity.action;
+            range = entity.range;
             item = entity.item;
             answer = entity.answer;
+            company = entity.company;
             //troubletype = entity.troubletype;
         }
     }

@@ -49,7 +49,7 @@ namespace CDNSupport
         }
 
         [LuisIntent("how")]
-        public async Task QuestionCreate(IDialogContext context, LuisResult result)
+        public async Task QuestionHow(IDialogContext context, LuisResult result)
         {
 
             if (isReply(question, result) && question.GetType() == typeof(HowQuestionInfo))
@@ -77,7 +77,7 @@ namespace CDNSupport
         }
 
         [LuisIntent("how_much")]
-        public async Task QuestionDeploy(IDialogContext context, LuisResult result) {
+        public async Task QuestionHowMuch(IDialogContext context, LuisResult result) {
 
             if (isReply(question, result) && question.GetType() == typeof(HowMuchQuestionInfo))
             {
@@ -103,7 +103,7 @@ namespace CDNSupport
             
         }
         [LuisIntent("how_long")]
-        public async Task QuestionPrice(IDialogContext context, LuisResult result) {
+        public async Task QuestionHowLong(IDialogContext context, LuisResult result) {
             if (isReply(question, result) && question.GetType() == typeof(HowLongQuestionInfo))
             {
                 //是上次询问问题的回答
@@ -129,7 +129,7 @@ namespace CDNSupport
 
 
         [LuisIntent("what")]
-        public async Task QuestionTroubleShooting(IDialogContext context, LuisResult result) {
+        public async Task QuestionWhat(IDialogContext context, LuisResult result) {
             if (isReply(question, result) && question.GetType() == typeof(WhatQuestionInfo))
             {
                 //是上次询问问题的回答
@@ -151,7 +151,57 @@ namespace CDNSupport
                 await getchoose(context).ConfigureAwait(false);
             }
         }
-          
+        [LuisIntent("have")]
+        public async Task QuestionHave(IDialogContext context, LuisResult result)
+        {
+            if (isReply(question, result) && question.GetType() == typeof(HaveQuestionInfo))
+            {
+                //是上次询问问题的回答
+                if (getEntities(question, result))
+                {
+                    await getchoose(context);
+                }
+                else
+                {
+                    await context.PostAsync(getNoAnswerReturn()).ConfigureAwait(false);
+                    context.Wait(MessageReceived);
+                }
+            }
+            else
+            {
+                QuestionInfo temp = question;
+                question = new HaveQuestionInfo();
+                question.transform(temp);
+                getinfo(question, result);
+                await getchoose(context).ConfigureAwait(false);
+            }
+        }
+
+        [LuisIntent("how_many")]
+        public async Task QuestionHowMany(IDialogContext context, LuisResult result)
+        {
+            if (isReply(question, result) && question.GetType() == typeof(HowManyQuestionInfo))
+            {
+                //是上次询问问题的回答
+                if (getEntities(question, result))
+                {
+                    await getchoose(context);
+                }
+                else
+                {
+                    await context.PostAsync(getNoAnswerReturn()).ConfigureAwait(false);
+                    context.Wait(MessageReceived);
+                }
+            }
+            else
+            {
+                QuestionInfo temp = question;
+                question = new HowManyQuestionInfo();
+                question.transform(temp);
+                getinfo(question, result);
+                await getchoose(context).ConfigureAwait(false);
+            }
+        }
 
         private string getEntity(string entity_string, LuisResult result)
         {
@@ -297,13 +347,15 @@ namespace CDNSupport
       
 
        private string getNoAnswerReturn() {
+           if (question.GetType() == typeof(HaveQuestionInfo))
+               return "不好意思我们并没有这个服务";
            return "我可能没法帮你解决你的这个问题，为什么不去问问神奇海螺呢？";
        }
 
 
        private string getAskString(IEnumerable<string> options_provider) {
-           string r = question.getAskString();
-           r += "您的问题是不是和我们的";
+           string r = question.getAskString(CurrentItem);
+           r += "您的问题是不是和";
 
            foreach (string i in options_provider) { 
                r += " "+i+",";
