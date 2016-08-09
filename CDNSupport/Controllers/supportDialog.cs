@@ -16,14 +16,11 @@ namespace CDNSupport
     [Serializable]
     public class CDNsupportDialog : LuisDialog<object>
     {
-
-        enum Intent { Create = 1,Deploy,Change,Delete }
-
-        public const string DefaultAnswer = "没有找到解决方法，建议联系我们的客服试试";
-      
-        private QuestionInfo question;
-        private IEnumerable<tableitem> allOptions;
-        private PropertyInfo CurrentItem;
+     
+        
+        private QuestionInfo question;       //当前对话的问题信息(context)
+        private IEnumerable<tableitem> allOptions;    //所有该类型问题可选的答案
+        private PropertyInfo CurrentItem;     //当前查询到的变量
         
         [LuisIntent("")]
         public async Task None(IDialogContext context, LuisResult result)
@@ -211,7 +208,7 @@ namespace CDNSupport
             {
                 return null;
             }
-
+            //因为中文的entity中会出现奇怪的空格
             return entity.Entity.Replace(" ", "").ToLower();
         }
 
@@ -293,7 +290,16 @@ namespace CDNSupport
                    if (allOptions.Count() == 1)
                    {                 
                        //TODO: 一个问题结束
-                       if_find = true;        
+
+                       //如果询问的是have类的问题，没有找到说明没有
+                       if (question.GetType() == typeof(HaveQuestionInfo))
+                       {
+                           await context.PostAsync(getNoAnswerReturn()).ConfigureAwait(false);
+                           if_find = false;
+                           break;
+                       }
+                       if_find = true;
+                       break;
                    }
 
                    if (option_provide.Count() < 1)
@@ -354,7 +360,7 @@ namespace CDNSupport
 
 
        private string getAskString(IEnumerable<string> options_provider) {
-           string r = question.getAskString(CurrentItem);
+           string r = question.getAskString(CurrentItem.Name);
            r += "您的问题是不是和";
 
            foreach (string i in options_provider) { 

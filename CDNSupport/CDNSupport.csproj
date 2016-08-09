@@ -157,6 +157,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
+    <Content Include="ClassDiagram1.cd" />
     <None Include="Properties\PublishProfiles\CDNSupport - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\CDNSupport - Web Deploy.pubxml" />
     <None Include="Web.Debug.config">

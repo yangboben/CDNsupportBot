@@ -34,6 +34,7 @@ namespace CDNSupport
         public string intent { get; set; }
 
 
+        //按顺序获取变量的迭代器
        public IOrderedEnumerable<PropertyInfo> GetSortedProperties()
        {
            return this.GetType()
@@ -42,13 +43,16 @@ namespace CDNSupport
              .OrderBy(p => ((OrderAttribute)p.GetCustomAttribute(typeof(OrderAttribute), false)).Order);
        }
 
+        //获取按顺序的变量的list
        public List<PropertyInfo> getSortedPropertiesList() {
            return GetSortedProperties().ToList();
        }
 
-
+        //判断是否 have里含有want
        private bool contain(string want, string have) {
-  
+
+           if (have == null)
+               return false;
            foreach (string i in have.Split('/')) {
                if (want == i)
                    return true;
@@ -56,11 +60,11 @@ namespace CDNSupport
          return false;
        }
                    
-            //return true means find the right
+            //return true means find the target, and the changedoptions is the item after choose. the option_provider is the choice that can be given to the user 
        public bool select<T>(string target,string target_value, IEnumerable<T> options , out IEnumerable<T> changedoptions, out List<string> option_provide)
        {
 
-           IEnumerable<T> temp = options.Where(p => (contain((string)(p.GetType().GetProperty(target).GetValue(p)),target_value))).ToList();
+           IEnumerable<T> temp = options.Where(p => (contain(target_value,(string)(p.GetType().GetProperty(target).GetValue(p))))).ToList();
            
            if (temp.Count()==0)
            {
@@ -78,6 +82,7 @@ namespace CDNSupport
        }
 
 
+        //将另一个questioninfo中的该questioninfo具有的entity转换进当前questioninfo
        public void transform(QuestionInfo question) {
            if (question == null)
                return;
@@ -93,7 +98,7 @@ namespace CDNSupport
        }
 
 
-       public abstract  string getAskString(PropertyInfo currentitem);
+       public abstract  string getAskString(string currentitem);
        
     }
 
@@ -111,11 +116,11 @@ namespace CDNSupport
             intent = "how";
         }
 
-       public override string getAskString(PropertyInfo currentitem)
+       public override string getAskString(string currentitem)
        {
 
            string r = "";
-           switch (currentitem.Name) { 
+           switch (currentitem) { 
                case "service":
                    r = string.Format("您能更清楚的描述下你是想了解对什么的配置问题么");
                    break;
@@ -140,7 +145,7 @@ namespace CDNSupport
             intent = "how_much";
         }
 
-        public override string getAskString(PropertyInfo currentitem)
+        public override string getAskString(string currentitem)
         {
             string r = String.Format("您能更清楚的描述下您是想了解什么的价格么？");
             return r;
@@ -162,10 +167,10 @@ namespace CDNSupport
             intent = "how_long";
         }
 
-        public override string getAskString(PropertyInfo currentitem)
+        public override string getAskString(string currentitem)
         {
             string r = "";
-            switch (currentitem.Name) {
+            switch (currentitem) {
                 case "service": String.Format("您能更清楚的描述下你是想了解什么服务么？");
                     break;
                 case "action": String.Format("您是想了解关于{0}进行什么操作需要的时间?",service);
@@ -193,7 +198,7 @@ namespace CDNSupport
             intent = "what";
         }
 
-        public override string getAskString(PropertyInfo currentitem)
+        public override string getAskString(string currentitem)
         {
             string r="";
             if (range != null)  
@@ -213,7 +218,7 @@ namespace CDNSupport
             intent = "have";
         }
 
-        public override string getAskString(PropertyInfo currentitem)
+        public override string getAskString(string currentitem)
         {
             string r = "";
             if (service != null)
@@ -240,11 +245,11 @@ namespace CDNSupport
             intent = "how_many";
         }
 
-        public override string getAskString(PropertyInfo currentitem)
+        public override string getAskString(string currentitem)
         {
             string r = "";
             
-            switch(currentitem.Name){
+            switch(currentitem){
                 case "service": r = "您能更清楚的描述下你是想了解什么服务么？";
                     break;
                 case "item": r = "您是想了解关于{0}的哪一项?";
