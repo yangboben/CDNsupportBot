@@ -200,6 +200,31 @@ namespace CDNSupport
             }
         }
 
+        [LuisIntent("trouble")]
+        public async Task QuestionTrouble(IDialogContext context, LuisResult result)
+        {
+            if (isReply(question, result) && question.GetType() == typeof(TroubleQuestionInfo))
+            {
+                //是上次询问问题的回答
+                if (getEntities(question, result))
+                {
+                    await getchoose(context);
+                }
+                else
+                {
+                    await context.PostAsync(getNoAnswerReturn()).ConfigureAwait(false);
+                    context.Wait(MessageReceived);
+                }
+            }
+            else
+            {
+                QuestionInfo temp = question;
+                question = new TroubleQuestionInfo();
+                question.transform(temp);
+                getinfo(question, result);
+                await getchoose(context).ConfigureAwait(false);
+            }
+        }
         private string getEntity(string entity_string, LuisResult result)
         {
 

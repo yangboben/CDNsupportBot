@@ -111,6 +111,9 @@ namespace CDNSupport
 
        [Order(1)]
        public string item { get; set; }
+
+       [Order(2)]
+       public string action { get; set; }
        
        public HowQuestionInfo() {
             intent = "how";
@@ -127,6 +130,9 @@ namespace CDNSupport
                case "item":
                    r = string.Format("您是想了解关于如何配置{0}的哪一项?");
                    break;
+               case "action":
+                   r = string.Format("您是想了解关于什么操作的信息");
+                    break;
                default :
                    r = "我好像脑子出错了。您不如刷新下或者咨询人工客服吧";
                    break;
@@ -141,6 +147,8 @@ namespace CDNSupport
         [Order(0)]
         public string service { get; set; }
 
+        [Order(1)]
+        public string item { get; set; }
         public HowMuchQuestionInfo() {
             intent = "how_much";
         }
@@ -252,7 +260,39 @@ namespace CDNSupport
             switch(currentitem){
                 case "service": r = "您能更清楚的描述下你是想了解什么服务么？";
                     break;
-                case "item": r = "您是想了解关于{0}的哪一项?";
+                case "item": r = String.Format("您是想了解关于{0}的哪一项?",service);
+                    break;
+                case "company": r = "您是想了解关于哪一家公司的呢?";
+                    break;
+            }
+
+            return r;
+        }
+    }
+
+    [Serializable]
+    class TroubleQuestionInfo : QuestionInfo
+    {
+        [Order(0)]
+        public string service { get; set; }
+
+        [Order(1)]
+        public string action { get; set; }
+
+        public TroubleQuestionInfo()
+        {
+            intent = "trouble";
+        }
+
+        public override string getAskString(string currentitem)
+        {
+            string r = "";
+
+            switch (currentitem)
+            {
+                case "service": r = "您是遇到了什么方面的问题可以描述的更清楚一点么？";
+                    break;
+                case "action": r = String.Format("您是{0}的什么操作出现了问题呢?",service);
                     break;
                 case "company": r = "您是想了解关于哪一家公司的呢?";
                     break;
